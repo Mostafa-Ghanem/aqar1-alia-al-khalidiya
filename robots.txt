@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://alia.aqar1.com/sitemap.xml
