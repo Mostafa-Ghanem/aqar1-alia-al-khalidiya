@@ -254,3 +254,49 @@ h3{margin-bottom:12px;color:var(--ink-900);font-size:1.35rem;line-height:1.35}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* CRO / Google Ads message-match layer */
+.hero-proof{display:flex;flex-wrap:wrap;gap:10px;margin:-8px 0 28px}
+.hero-proof span{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(15,21,27,.42);color:var(--ink-100);font-size:.88rem;backdrop-filter:blur(6px)}
+.hero-proof strong{color:var(--white)}
+.hero-trust{margin:20px 0 0;color:var(--ink-300);font-size:.82rem}
+.enquiry-card{max-height:none}
+.enquiry-card h2{margin-bottom:10px;color:var(--white);font-size:1.6rem}
+.enquiry-intro{margin-bottom:22px;color:var(--ink-300);font-size:.94rem;line-height:1.75}
+.interest-form{display:grid;gap:9px}
+.interest-form label{color:var(--ink-100);font-size:.86rem;font-weight:600}
+.interest-form label span{color:var(--ink-400);font-weight:400}
+.interest-form input,.interest-form select{width:100%;min-height:48px;padding:10px 13px;background:rgba(255,255,255,.07);color:var(--white);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm)}
+.interest-form input::placeholder{color:var(--ink-400)}
+.interest-form select option{background:var(--ink-800);color:var(--white)}
+.interest-form input:focus,.interest-form select:focus{border-color:var(--bronze-300);outline:none;box-shadow:0 0 0 3px rgba(190,145,112,.14)}
+.form-submit{width:100%;margin-top:8px;border:0;cursor:pointer}
+.form-note{margin:2px 0 0;color:var(--ink-400);font-size:.74rem;line-height:1.55}
+.enquiry-links{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:14px}
+.enquiry-links .text-link{margin-top:0;font-size:.82rem}
+.intent-link{display:inline-flex;align-items:center;margin-top:22px;padding:0;background:none;border:0;border-bottom:1px solid currentColor;color:var(--bronze-700);font:inherit;font-weight:600;cursor:pointer}
+.intent-link:hover{color:var(--bronze-600)}
+.info-card{display:flex;flex-direction:column}
+.info-card .intent-link{align-self:flex-start;margin-top:auto;padding-top:18px}
+
+@media (max-width:1050px){
+  .hero-grid{grid-template-columns:minmax(0,1fr) minmax(300px,.82fr)}
+}
+@media (max-width:800px){
+  .hero-copy{padding-top:34px}
+  .hero-grid{gap:24px}
+  .hero-proof{margin-bottom:22px}
+  .enquiry-card{padding:22px}
+  .hero-trust{margin-top:16px}
+}
+@media (max-width:520px){
+  .hero-grid{padding-block:48px 36px}
+  .hero-copy{padding-top:26px}
+  .hero-actions{display:grid;grid-template-columns:1fr 1fr}
+  .hero-actions .btn{width:100%;padding-inline:12px}
+  .hero-proof{gap:7px}
+  .hero-proof span{padding:7px 9px;font-size:.78rem}
+  .enquiry-card h2{font-size:1.35rem}
+  .enquiry-links{display:grid;gap:10px}
+}
+
