@@ -20,6 +20,7 @@
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://alia.aqar1.com/">
   <link rel="icon" href="/assets/aqar-one-logo.png" type="image/png">
+  <link rel="preload" as="image" href="/assets/hero-alia.webp" type="image/webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -82,7 +83,9 @@
 
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-media" aria-hidden="true"></div>
+      <picture class="hero-media" aria-hidden="true">
+        <img src="/assets/hero-alia.webp" alt="" width="1080" height="720" fetchpriority="high" decoding="async">
+      </picture>
       <div class="container hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">ALYA AL KHALIDIYA · AL HADA · TAIF</p>
@@ -106,24 +109,69 @@
 
         <aside class="hero-card enquiry-card" id="enquiry-card" aria-labelledby="enquiry-title">
           <p class="card-kicker">اطلب التفاصيل</p>
-          <h2 id="enquiry-title">ما نوع الأرض التي تبحث عنها؟</h2>
-          <p class="enquiry-intro">اختر اهتمامك وسنجهز لك رسالة واتساب للاستفسار عن المشروع مباشرة.</p>
-          <form class="interest-form" id="interest-form">
-            <label for="lead-name">الاسم <span>(اختياري)</span></label>
-            <input id="lead-name" name="name" type="text" autocomplete="name" placeholder="اكتب اسمك">
+          <h2 id="enquiry-title">احصل على تفاصيل القطع المناسبة لك</h2>
+          <p class="enquiry-intro">اترك بياناتك وسيقوم فريق عقار ون بالتواصل معك بخصوص عالية الخالدية.</p>
+          <form class="interest-form lead-form" id="interest-form" novalidate>
+            <div class="form-row two-cols">
+              <div>
+                <label for="lead-name">الاسم</label>
+                <input id="lead-name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="الاسم الكامل" required>
+              </div>
+              <div>
+                <label for="lead-phone">رقم الجوال</label>
+                <input id="lead-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="05xxxxxxxx" required dir="ltr">
+              </div>
+            </div>
 
-            <label for="lead-interest">نوع الاهتمام</label>
-            <select id="lead-interest" name="interest" required>
-              <option value="" selected disabled>اختر نوع الأرض</option>
-              <option value="سكني">أرض سكنية</option>
-              <option value="تجاري">أرض تجارية</option>
-              <option value="استثماري / متعدد الاستخدامات">استثماري / متعددة الاستخدامات</option>
-              <option value="غير محدد">أريد معرفة الخيارات المتاحة</option>
-            </select>
+            <label for="lead-email">البريد الإلكتروني <span>(اختياري)</span></label>
+            <input id="lead-email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="name@example.com" dir="ltr">
 
-            <button class="btn btn-primary btn-lg form-submit" type="submit">اطلب التفاصيل عبر واتساب</button>
-            <p class="form-note">سيتم فتح واتساب برسالة جاهزة، ولن تُرسل الرسالة قبل تأكيدك.</p>
+            <div class="form-row two-cols">
+              <div>
+                <label for="lead-interest">نوع الاهتمام</label>
+                <select id="lead-interest" name="interest" required>
+                  <option value="" selected disabled>اختر نوع الأرض</option>
+                  <option value="سكني">أرض سكنية</option>
+                  <option value="تجاري">أرض تجارية</option>
+                  <option value="استثماري / متعدد الاستخدامات">استثماري / متعددة الاستخدامات</option>
+                  <option value="غير محدد">أريد معرفة الخيارات المتاحة</option>
+                </select>
+              </div>
+              <div>
+                <label for="lead-contact">أفضل طريقة للتواصل</label>
+                <select id="lead-contact" name="preferred_contact">
+                  <option value="أي طريقة" selected>أي طريقة</option>
+                  <option value="مكالمة">مكالمة</option>
+                  <option value="واتساب">واتساب</option>
+                </select>
+              </div>
+            </div>
+
+            <label for="lead-message">ملاحظات <span>(اختياري)</span></label>
+            <textarea id="lead-message" name="message" rows="2" maxlength="500" placeholder="مثال: أبحث عن مساحة محددة أو استخدام معين"></textarea>
+
+            <div class="hp-field" aria-hidden="true">
+              <label for="lead-company">اترك هذا الحقل فارغًا</label>
+              <input id="lead-company" name="company" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <label class="consent-row" for="lead-consent">
+              <input id="lead-consent" name="consent" type="checkbox" required>
+              <span>أوافق على استخدام بياناتي للتواصل معي بخصوص مشروع عالية الخالدية.</span>
+            </label>
+
+            <button class="btn btn-primary btn-lg form-submit" type="submit" data-lead-submit>اطلب تفاصيل المشروع</button>
+            <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+            <p class="form-note">لن يتم إرسال بياناتك إلى أدوات القياس الإعلانية؛ تُستخدم فقط للتواصل وإدارة طلبك.</p>
           </form>
+          <div class="lead-success" data-lead-success hidden>
+            <strong>تم استلام طلبك بنجاح.</strong>
+            <span>سيتواصل معك فريق عقار ون. ويمكنك أيضًا التواصل مباشرة الآن.</span>
+            <div class="success-actions">
+              <a class="btn btn-secondary track-whatsapp" href="https://wa.me/966565777177?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D9%82%D9%85%D8%AA%20%D8%A8%D8%A5%D8%B1%D8%B3%D8%A7%D9%84%20%D8%B7%D9%84%D8%A8%20%D8%AA%D9%81%D8%A7%D8%B5%D9%8A%D9%84%20%D8%B9%D8%A7%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AE%D8%A7%D9%84%D8%AF%D9%8A%D8%A9" target="_blank" rel="noopener" data-event="whatsapp_click">واتساب</a>
+              <a class="btn btn-inverse track-call" href="tel:8002486666" data-event="call_click">اتصال</a>
+            </div>
+          </div>
           <div class="enquiry-links">
             <a class="text-link track-download" href="/assets/alia-al-khalidiya-brochure.pdf" download data-event="doc_download">حمّل الكتيب التعريفي <span aria-hidden="true">↓</span></a>
             <a class="text-link track-map" href="https://maps.app.goo.gl/SFXRjVYF9uX1DBZDA?g_st=aw" target="_blank" rel="noopener" data-event="map_click">شاهد الموقع على الخريطة ↗</a>
@@ -219,7 +267,7 @@
           <a class="btn btn-primary btn-lg track-map" href="https://maps.app.goo.gl/SFXRjVYF9uX1DBZDA?g_st=aw" target="_blank" rel="noopener" data-event="map_click">شاهد على الخريطة</a>
         </div>
         <div class="location-visual">
-          <img src="/assets/hero.webp" alt="إطلالة جوية على موقع مخطط عالية الخالدية بالطائف" width="800" height="500" loading="lazy">
+          <img src="/assets/project-1.webp" alt="تصور بصري جوي لمشروع عالية الخالدية بالطائف" width="640" height="640" loading="lazy" decoding="async">
           <div class="location-badge"><span>الطائف</span><strong>منطقة الهدا</strong></div>
         </div>
       </div>
@@ -258,20 +306,28 @@
       </div>
     </section>
 
-    <section class="section alt" id="gallery">
+    <section class="section alt vision-section" id="gallery">
       <div class="container">
         <div class="section-head center">
-          <p class="eyebrow dark">PROJECT GALLERY</p>
-          <h2>عالية الخالدية في صور</h2>
-          <p>مواد تعريفية معتمدة من ملف المشروع.</p>
+          <p class="eyebrow dark">PROJECT VISION</p>
+          <h2>تصور بصري لعالية الخالدية</h2>
+          <p>مشاهد مرفقة توضح الطابع العمراني والفرص السكنية والتجارية للمشروع.</p>
         </div>
-        <div class="gallery-grid">
-          <button class="gallery-item gallery-wide" type="button" data-gallery="/assets/gallery-1.webp" aria-label="عرض الصورة الأولى بحجم أكبر"><img src="/assets/gallery-1.webp" alt="مخطط عالية الخالدية - صورة تعريفية 1" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-2.webp" aria-label="عرض الصورة الثانية بحجم أكبر"><img src="/assets/gallery-2.webp" alt="مخطط عالية الخالدية - صورة تعريفية 2" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-3.webp" aria-label="عرض الصورة الثالثة بحجم أكبر"><img src="/assets/gallery-3.webp" alt="مخطط عالية الخالدية - صورة تعريفية 3" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-4.webp" aria-label="عرض الصورة الرابعة بحجم أكبر"><img src="/assets/gallery-4.webp" alt="مخطط عالية الخالدية - صورة تعريفية 4" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-5.webp" aria-label="عرض الصورة الخامسة بحجم أكبر"><img src="/assets/gallery-5.webp" alt="مخطط عالية الخالدية - صورة تعريفية 5" width="960" height="960" loading="lazy"></button>
+        <div class="vision-grid">
+          <button class="vision-card vision-wide" type="button" data-gallery="/assets/project-1.webp" aria-label="عرض التصور الجوي بحجم أكبر">
+            <img src="/assets/project-1.webp" alt="تصور بصري جوي لعالية الخالدية" width="640" height="640" loading="lazy" decoding="async">
+            <span>رؤية شاملة للمشروع</span>
+          </button>
+          <button class="vision-card" type="button" data-gallery="/assets/project-2.webp" aria-label="عرض تصور الواجهة التجارية بحجم أكبر">
+            <img src="/assets/project-2.webp" alt="تصور بصري للواجهات التجارية في عالية الخالدية" width="640" height="640" loading="lazy" decoding="async">
+            <span>واجهات تجارية عصرية</span>
+          </button>
+          <button class="vision-card" type="button" data-gallery="/assets/project-3.webp" aria-label="عرض تصور المنطقة التجارية بحجم أكبر">
+            <img src="/assets/project-3.webp" alt="تصور بصري لمنطقة تجارية في عالية الخالدية" width="640" height="640" loading="lazy" decoding="async">
+            <span>فرص للتطوير والاستثمار</span>
+          </button>
         </div>
+        <p class="render-disclaimer">الصور أعلاه تصورات بصرية مرفقة للمشروع لأغراض العرض، وقد تختلف تفاصيل التنفيذ النهائي.</p>
       </div>
     </section>
 
@@ -297,7 +353,7 @@
           </details>
           <details>
             <summary>كيف يمكن الحصول على التفاصيل والحجز؟</summary>
-            <p>يمكن طلب التفاصيل عبر واتساب من نموذج الاستفسار أعلى الصفحة، أو الاتصال مباشرة بالرقم الموحد 8002486666، كما يمكن تحميل الكتيب التعريفي من الصفحة.</p>
+            <p>يمكن تعبئة نموذج طلب التفاصيل أعلى الصفحة ليتم تسجيل طلبك والتواصل معك، أو الاتصال مباشرة بالرقم الموحد 8002486666، كما يمكن تحميل الكتيب التعريفي من الصفحة.</p>
           </details>
         </div>
       </div>

@@ -130,24 +130,91 @@
   });
 
   const interestForm = document.getElementById('interest-form');
-  interestForm?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const name = document.getElementById('lead-name')?.value.trim() || '';
-    const interest = interestSelect?.value || 'غير محدد';
-    const campaign = query.get('utm_campaign') || '';
-    const message = [
-      'مرحبًا، أريد تفاصيل مشروع عالية الخالدية بالطائف.',
-      `نوع الاهتمام: ${interest}`,
-      name ? `الاسم: ${name}` : '',
-      campaign ? `الحملة: ${campaign}` : ''
-    ].filter(Boolean).join('\n');
+  const formStatus = document.querySelector('[data-form-status]');
+  const successBox = document.querySelector('[data-lead-success]');
+  const submitButton = document.querySelector('[data-lead-submit]');
 
-    emit('whatsapp_prefill_submit', {
-      interest_type: interest,
-      traffic_intent: trafficIntent || 'default',
-      utm_campaign: campaign || null
-    });
-    window.open(`https://wa.me/966565777177?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+  const cleanPhone = (value) => value.replace(/[^0-9+]/g, '');
+  const isSaudiPhone = (value) => /^(?:\+?966|00966|0)?5\d{8}$/.test(cleanPhone(value));
+  const qp = (key) => query.get(key) || '';
+
+  interestForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    formStatus?.classList.remove('error', 'success');
+    if (formStatus) formStatus.textContent = '';
+
+    const name = document.getElementById('lead-name')?.value.trim() || '';
+    const phone = document.getElementById('lead-phone')?.value.trim() || '';
+    const email = document.getElementById('lead-email')?.value.trim() || '';
+    const interest = interestSelect?.value || '';
+    const preferredContact = document.getElementById('lead-contact')?.value || 'أي طريقة';
+    const message = document.getElementById('lead-message')?.value.trim() || '';
+    const honeypot = document.getElementById('lead-company')?.value || '';
+    const consent = Boolean(document.getElementById('lead-consent')?.checked);
+
+    if (!name || !phone || !interest || !consent) {
+      if (formStatus) { formStatus.textContent = 'أكمل الاسم والجوال ونوع الاهتمام والموافقة على التواصل.'; formStatus.classList.add('error'); }
+      return;
+    }
+    if (!isSaudiPhone(phone)) {
+      if (formStatus) { formStatus.textContent = 'تحقق من رقم الجوال السعودي، مثال: 05xxxxxxxx.'; formStatus.classList.add('error'); }
+      document.getElementById('lead-phone')?.focus();
+      return;
+    }
+    if (honeypot) return;
+
+    const payload = {
+      name, phone: cleanPhone(phone), email, interest,
+      preferred_contact: preferredContact, message, company: honeypot, consent,
+      source: qp('utm_source') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'google' : 'direct'),
+      medium: qp('utm_medium') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'cpc' : ''),
+      campaign: qp('utm_campaign'),
+      ad_group: qp('utm_adgroup') || qp('adgroupid'),
+      keyword: qp('utm_term'),
+      match_type: qp('matchtype'),
+      device: qp('device'),
+      landing_intent: trafficIntent || 'default',
+      gclid: qp('gclid'), gbraid: qp('gbraid'), wbraid: qp('wbraid'),
+      page_url: window.location.href,
+      referrer: document.referrer || ''
+    };
+
+    if (submitButton) { submitButton.disabled = true; submitButton.textContent = 'جارٍ إرسال الطلب…'; }
+    if (formStatus) formStatus.textContent = 'جارٍ تسجيل طلبك…';
+
+    try {
+      const response = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) throw new Error(result.error || 'submit_failed');
+
+      emit('generate_lead', {
+        lead_id: result.lead_id || null,
+        interest_type: interest,
+        preferred_contact: preferredContact,
+        traffic_intent: trafficIntent || 'default',
+        source: payload.source || null,
+        medium: payload.medium || null,
+        campaign: payload.campaign || null,
+        ad_group: payload.ad_group || null,
+        keyword: payload.keyword || null
+      });
+
+      interestForm.hidden = true;
+      if (successBox) successBox.hidden = false;
+      if (formStatus) { formStatus.textContent = ''; formStatus.classList.add('success'); }
+    } catch (error) {
+      emit('lead_submit_error', { traffic_intent: trafficIntent || 'default', error_type: String(error?.message || 'submit_failed').slice(0, 80) });
+      if (formStatus) {
+        formStatus.textContent = 'تعذر تسجيل الطلب الآن. يمكنك المحاولة مرة أخرى أو التواصل معنا مباشرة عبر واتساب أو الرقم الموحد.';
+        formStatus.classList.add('error');
+      }
+    } finally {
+      if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'اطلب تفاصيل المشروع'; }
+    }
   });
 
 })();
