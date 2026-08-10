@@ -139,10 +139,9 @@
     });
   });
 
-  const interestForm = document.getElementById('interest-form');
-  const formStatus = document.querySelector('[data-form-status]');
-  const successBox = document.querySelector('[data-lead-success]');
-  const submitButton = document.querySelector('[data-lead-submit]');
+  const leadForms = document.querySelectorAll('.lead-form');
+  const getField = (form, fieldName) => form.elements.namedItem(fieldName);
+  const getFieldValue = (form, fieldName) => getField(form, fieldName)?.value.trim() || '';
 
   const normalizeDigits = (phoneText) => phoneText
     .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
@@ -158,81 +157,102 @@
   };
   const qp = (key) => query.get(key) || '';
 
-  interestForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  const readLeadFields = (leadForm) => ({
+    name: getFieldValue(leadForm, 'name'),
+    phone: getFieldValue(leadForm, 'phone'),
+    interest: getFieldValue(leadForm, 'interest'),
+    honeypot: getFieldValue(leadForm, 'company')
+  });
+  const validateLeadFields = ({ name, phone, interest }) => {
+    if (!name || !phone || !interest) return 'أكمل الاسم ورقم الجوال.';
+    if (!isCompletePhone(phone)) return 'أدخل رقم جوال كاملًا، سعوديًا أو دوليًا، مثل 05xxxxxxxx أو +9665xxxxxxxx.';
+    return '';
+  };
+  const buildLeadPayload = ({ name, phone, interest, honeypot }) => ({
+    name, phone: normalizePhone(phone), email: '', interest,
+    preferred_contact: 'أي طريقة', message: '', company: honeypot, consent: true,
+    source: qp('utm_source') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'google' : 'direct'),
+    medium: qp('utm_medium') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'cpc' : ''),
+    campaign: qp('utm_campaign'), ad_group: qp('utm_adgroup') || qp('adgroupid'),
+    keyword: qp('utm_term'), match_type: qp('matchtype'), device: qp('device'),
+    landing_intent: trafficIntent || 'default', gclid: qp('gclid'), gbraid: qp('gbraid'),
+    wbraid: qp('wbraid'), page_url: window.location.href, referrer: document.referrer || ''
+  });
+  const sendLead = async (leadPayload) => {
+    const response = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(leadPayload)
+    });
+    const responseBody = await response.json().catch(() => ({}));
+    if (!response.ok || !responseBody.ok) throw new Error(responseBody.error || 'submit_failed');
+    return responseBody;
+  };
+  const clearLeadStatus = (formStatus) => {
     formStatus?.classList.remove('error', 'success');
     if (formStatus) formStatus.textContent = '';
-
-    const name = document.getElementById('lead-name')?.value.trim() || '';
-    const phone = document.getElementById('lead-phone')?.value.trim() || '';
-    const interest = interestSelect?.value || '';
-    const preferredContact = 'أي طريقة';
-    const honeypot = document.getElementById('lead-company')?.value || '';
-    const consent = Boolean(document.getElementById('lead-consent')?.checked);
-
-    if (!name || !phone || !interest || !consent) {
-      if (formStatus) { formStatus.textContent = 'أكمل الاسم والجوال ونوع الاهتمام والموافقة على التواصل.'; formStatus.classList.add('error'); }
-      return;
-    }
-    if (!isCompletePhone(phone)) {
-      if (formStatus) { formStatus.textContent = 'أدخل رقم جوال كاملًا، سعوديًا أو دوليًا، مثل 05xxxxxxxx أو +9665xxxxxxxx.'; formStatus.classList.add('error'); }
-      document.getElementById('lead-phone')?.focus();
-      return;
-    }
-    if (honeypot) return;
-
-    const payload = {
-      name, phone: normalizePhone(phone), email: '', interest,
-      preferred_contact: preferredContact, message: '', company: honeypot, consent,
-      source: qp('utm_source') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'google' : 'direct'),
-      medium: qp('utm_medium') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'cpc' : ''),
-      campaign: qp('utm_campaign'),
-      ad_group: qp('utm_adgroup') || qp('adgroupid'),
-      keyword: qp('utm_term'),
-      match_type: qp('matchtype'),
-      device: qp('device'),
-      landing_intent: trafficIntent || 'default',
-      gclid: qp('gclid'), gbraid: qp('gbraid'), wbraid: qp('wbraid'),
-      page_url: window.location.href,
-      referrer: document.referrer || ''
-    };
-
+  };
+  const showLeadError = (formStatus, message) => {
+    if (!formStatus) return;
+    formStatus.textContent = message;
+    formStatus.classList.add('error');
+  };
+  const startLeadSubmission = ({ submitButton, formStatus }) => {
     if (submitButton) { submitButton.disabled = true; submitButton.textContent = 'جارٍ إرسال الطلب…'; }
     if (formStatus) formStatus.textContent = 'جارٍ تسجيل طلبك…';
-
+  };
+  const resetLeadSubmission = ({ submitButton, defaultLabel }) => {
+    if (submitButton) { submitButton.disabled = false; submitButton.textContent = defaultLabel; }
+  };
+  const showLeadSuccess = (leadForm, formElements) => {
+    leadForm.hidden = true;
+    if (formElements.successBox) formElements.successBox.hidden = false;
+    if (formElements.formStatus) formElements.formStatus.classList.add('success');
+  };
+  const reportLeadSuccess = (leadFields, leadPayload, responseBody) => {
+    emit('generate_lead', {
+      lead_id: responseBody.lead_id || null, interest_type: leadFields.interest,
+      preferred_contact: leadPayload.preferred_contact, traffic_intent: trafficIntent || 'default',
+      source: leadPayload.source || null, medium: leadPayload.medium || null,
+      campaign: leadPayload.campaign || null, ad_group: leadPayload.ad_group || null,
+      keyword: leadPayload.keyword || null
+    });
+  };
+  const submitLead = async ({ leadForm, formElements, leadFields, leadPayload }) => {
+    startLeadSubmission(formElements);
     try {
-      const response = await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || !result.ok) throw new Error(result.error || 'submit_failed');
-
-      emit('generate_lead', {
-        lead_id: result.lead_id || null,
-        interest_type: interest,
-        preferred_contact: preferredContact,
-        traffic_intent: trafficIntent || 'default',
-        source: payload.source || null,
-        medium: payload.medium || null,
-        campaign: payload.campaign || null,
-        ad_group: payload.ad_group || null,
-        keyword: payload.keyword || null
-      });
-
-      interestForm.hidden = true;
-      if (successBox) successBox.hidden = false;
-      if (formStatus) { formStatus.textContent = ''; formStatus.classList.add('success'); }
+      const responseBody = await sendLead(leadPayload);
+      reportLeadSuccess(leadFields, leadPayload, responseBody);
+      showLeadSuccess(leadForm, formElements);
     } catch (error) {
       emit('lead_submit_error', { traffic_intent: trafficIntent || 'default', error_type: String(error?.message || 'submit_failed').slice(0, 80) });
-      if (formStatus) {
-        formStatus.textContent = 'تعذر تسجيل الطلب الآن. يمكنك المحاولة مرة أخرى أو التواصل معنا مباشرة عبر الرقم الموحد.';
-        formStatus.classList.add('error');
-      }
+      showLeadError(formElements.formStatus, 'تعذر تسجيل الطلب الآن. يمكنك المحاولة مرة أخرى أو التواصل معنا مباشرة عبر الرقم الموحد.');
     } finally {
-      if (submitButton) { submitButton.disabled = false; submitButton.textContent = 'اطلب تفاصيل المشروع'; }
+      resetLeadSubmission(formElements);
     }
-  });
+  };
+  const bindLeadForm = (leadForm) => {
+    const submitButton = leadForm.querySelector('[data-lead-submit]');
+    const formElements = {
+      formStatus: leadForm.querySelector('[data-form-status]'),
+      successBox: leadForm.parentElement?.querySelector('[data-lead-success]'),
+      submitButton,
+      defaultLabel: submitButton?.dataset.defaultLabel || submitButton?.textContent || 'احصل على التفاصيل'
+    };
+    leadForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearLeadStatus(formElements.formStatus);
+      const leadFields = readLeadFields(leadForm);
+      const validationMessage = validateLeadFields(leadFields);
+      if (validationMessage) {
+        showLeadError(formElements.formStatus, validationMessage);
+        if (!isCompletePhone(leadFields.phone)) getField(leadForm, 'phone')?.focus();
+        return;
+      }
+      if (leadFields.honeypot) return;
+      submitLead({ leadForm, formElements, leadFields, leadPayload: buildLeadPayload(leadFields) });
+    });
+  };
+  leadForms.forEach(bindLeadForm);
 
 })();
