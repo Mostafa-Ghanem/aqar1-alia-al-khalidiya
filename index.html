@@ -71,7 +71,12 @@
 
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-media" aria-hidden="true"></div>
+      <div class="hero-media" aria-hidden="true">
+        <picture>
+          <source type="image/avif" srcset="/assets/hero.avif">
+          <img src="/assets/hero.webp" alt="" width="1080" height="1080" fetchpriority="high" decoding="async">
+        </picture>
+      </div>
       <div class="container hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">ALYA AL KHALIDIYA · TAIF</p>
@@ -184,7 +189,10 @@
           <a class="btn btn-primary btn-lg track-map" href="https://maps.app.goo.gl/SFXRjVYF9uX1DBZDA?g_st=aw" target="_blank" rel="noopener" data-event="map_click">شاهد على الخريطة</a>
         </div>
         <div class="location-visual">
-          <img src="/assets/hero.webp" alt="إطلالة جوية على موقع مخطط عالية الخالدية بالطائف" width="800" height="500" loading="lazy">
+          <picture>
+            <source type="image/avif" srcset="/assets/location.avif">
+            <img src="/assets/location.webp" alt="إطلالة على مرافق ومباني مشروع عالية الخالدية بالطائف" width="1080" height="1080" loading="lazy" decoding="async">
+          </picture>
           <div class="location-badge"><span>الطائف</span><strong>منطقة الهدا</strong></div>
         </div>
       </div>
@@ -231,11 +239,30 @@
           <p>مواد تعريفية معتمدة من ملف المشروع.</p>
         </div>
         <div class="gallery-grid">
-          <button class="gallery-item gallery-wide" type="button" data-gallery="/assets/gallery-1.webp" aria-label="عرض الصورة الأولى بحجم أكبر"><img src="/assets/gallery-1.webp" alt="مخطط عالية الخالدية - صورة تعريفية 1" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-2.webp" aria-label="عرض الصورة الثانية بحجم أكبر"><img src="/assets/gallery-2.webp" alt="مخطط عالية الخالدية - صورة تعريفية 2" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-3.webp" aria-label="عرض الصورة الثالثة بحجم أكبر"><img src="/assets/gallery-3.webp" alt="مخطط عالية الخالدية - صورة تعريفية 3" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-4.webp" aria-label="عرض الصورة الرابعة بحجم أكبر"><img src="/assets/gallery-4.webp" alt="مخطط عالية الخالدية - صورة تعريفية 4" width="960" height="960" loading="lazy"></button>
-          <button class="gallery-item" type="button" data-gallery="/assets/gallery-5.webp" aria-label="عرض الصورة الخامسة بحجم أكبر"><img src="/assets/gallery-5.webp" alt="مخطط عالية الخالدية - صورة تعريفية 5" width="960" height="960" loading="lazy"></button>
+          <button class="gallery-item" type="button" data-gallery="/assets/gallery-1.webp" aria-label="عرض الصورة الأولى بحجم أكبر">
+            <picture>
+              <source type="image/avif" srcset="/assets/gallery-1.avif">
+              <img src="/assets/gallery-1.webp" alt="إطلالة جوية ليلية على مخطط عالية الخالدية بالطائف" width="1080" height="1080" loading="lazy" decoding="async">
+            </picture>
+          </button>
+          <button class="gallery-item" type="button" data-gallery="/assets/gallery-2.webp" aria-label="عرض الصورة الثانية بحجم أكبر">
+            <picture>
+              <source type="image/avif" srcset="/assets/gallery-2.avif">
+              <img src="/assets/gallery-2.webp" alt="مبنى ومرافق مشروع عالية الخالدية بالطائف" width="1080" height="1080" loading="lazy" decoding="async">
+            </picture>
+          </button>
+          <button class="gallery-item" type="button" data-gallery="/assets/gallery-3.webp" aria-label="عرض الصورة الثالثة بحجم أكبر">
+            <picture>
+              <source type="image/avif" srcset="/assets/gallery-3.avif">
+              <img src="/assets/gallery-3.webp" alt="واجهة معمارية ضمن مشروع عالية الخالدية بالطائف" width="1080" height="1080" loading="lazy" decoding="async">
+            </picture>
+          </button>
+          <button class="gallery-item" type="button" data-gallery="/assets/gallery-4.webp" aria-label="عرض الصورة الرابعة بحجم أكبر">
+            <picture>
+              <source type="image/avif" srcset="/assets/gallery-4.avif">
+              <img src="/assets/gallery-4.webp" alt="إطلالة جوية نهارية على مخطط عالية الخالدية بالطائف" width="1080" height="1080" loading="lazy" decoding="async">
+            </picture>
+          </button>
         </div>
       </div>
     </section>
