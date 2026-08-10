@@ -120,16 +120,18 @@
   }
 
   const interestSelect = document.getElementById('lead-interest');
+  const interestSelects = document.querySelectorAll('select[name="interest"]');
+  const setInterest = (value) => interestSelects.forEach((select) => { select.value = value; });
   const presetInterest = {
     residential: 'سكني',
     commercial: 'تجاري',
     investment: 'استثماري / متعدد الاستخدامات'
   }[trafficIntent];
-  if (interestSelect && presetInterest) interestSelect.value = presetInterest;
+  if (presetInterest) setInterest(presetInterest);
 
   document.querySelectorAll('[data-set-interest]').forEach((button) => {
     button.addEventListener('click', () => {
-      if (interestSelect) interestSelect.value = button.dataset.setInterest;
+      setInterest(button.dataset.setInterest);
       emit('interest_select', {
         interest_type: button.dataset.setInterest,
         traffic_intent: trafficIntent || 'default'
@@ -164,7 +166,7 @@
     honeypot: getFieldValue(leadForm, 'company')
   });
   const validateLeadFields = ({ name, phone, interest }) => {
-    if (!name || !phone || !interest) return 'أكمل الاسم ورقم الجوال.';
+    if (!name || !phone || !interest) return 'أكمل الاسم ورقم الجوال واختر نوع الاهتمام.';
     if (!isCompletePhone(phone)) return 'أدخل رقم جوال كاملًا، سعوديًا أو دوليًا، مثل 05xxxxxxxx أو +9665xxxxxxxx.';
     return '';
   };
