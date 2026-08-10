@@ -123,32 +123,36 @@
               </div>
             </div>
 
-            <label for="lead-email">البريد الإلكتروني <span>(اختياري)</span></label>
-            <input id="lead-email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="name@example.com" dir="ltr">
+            <label for="lead-interest">نوع الاهتمام</label>
+            <select id="lead-interest" name="interest" required>
+              <option value="" selected disabled>اختر نوع الأرض</option>
+              <option value="سكني">أرض سكنية</option>
+              <option value="تجاري">أرض تجارية</option>
+              <option value="استثماري / متعدد الاستخدامات">استثماري / متعددة الاستخدامات</option>
+              <option value="غير محدد">أريد معرفة الخيارات المتاحة</option>
+            </select>
 
-            <div class="form-row two-cols">
-              <div>
-                <label for="lead-interest">نوع الاهتمام</label>
-                <select id="lead-interest" name="interest" required>
-                  <option value="" selected disabled>اختر نوع الأرض</option>
-                  <option value="سكني">أرض سكنية</option>
-                  <option value="تجاري">أرض تجارية</option>
-                  <option value="استثماري / متعدد الاستخدامات">استثماري / متعددة الاستخدامات</option>
-                  <option value="غير محدد">أريد معرفة الخيارات المتاحة</option>
-                </select>
+            <details class="optional-fields">
+              <summary>إضافة بيانات اختيارية</summary>
+              <div class="optional-fields-grid">
+                <div>
+                  <label for="lead-email">البريد الإلكتروني <span>(اختياري)</span></label>
+                  <input id="lead-email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="name@example.com" dir="ltr">
+                </div>
+                <div>
+                  <label for="lead-contact">أفضل طريقة للتواصل</label>
+                  <select id="lead-contact" name="preferred_contact">
+                    <option value="أي طريقة" selected>أي طريقة</option>
+                    <option value="مكالمة">مكالمة</option>
+                    <option value="واتساب">واتساب</option>
+                  </select>
+                </div>
+                <div class="optional-full">
+                  <label for="lead-message">ملاحظات <span>(اختياري)</span></label>
+                  <textarea id="lead-message" name="message" rows="2" maxlength="500" placeholder="مثال: أبحث عن مساحة محددة أو استخدام معين"></textarea>
+                </div>
               </div>
-              <div>
-                <label for="lead-contact">أفضل طريقة للتواصل</label>
-                <select id="lead-contact" name="preferred_contact">
-                  <option value="أي طريقة" selected>أي طريقة</option>
-                  <option value="مكالمة">مكالمة</option>
-                  <option value="واتساب">واتساب</option>
-                </select>
-              </div>
-            </div>
-
-            <label for="lead-message">ملاحظات <span>(اختياري)</span></label>
-            <textarea id="lead-message" name="message" rows="2" maxlength="500" placeholder="مثال: أبحث عن مساحة محددة أو استخدام معين"></textarea>
+            </details>
 
             <div class="hp-field" aria-hidden="true">
               <label for="lead-company">اترك هذا الحقل فارغًا</label>
