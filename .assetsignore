@@ -1,0 +1,12 @@
+worker.js
+wrangler.jsonc
+.assetsignore
+functions/
+functions/**
+google-apps-script/
+google-apps-script/**
+docs/
+docs/**
+README.md
+.git/
+.github/
