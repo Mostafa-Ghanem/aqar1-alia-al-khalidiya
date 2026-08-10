@@ -10,7 +10,7 @@
     "run_worker_first": ["/api/*"]
   },
   "vars": {
-    "LEADS_ENDPOINT": "https://script.google.com/macros/s/AKfycbx0aqaV8f8K-C3svRq_5l0sK2Fg3R1uX3QkwSqE7q1P9QObsAo-iAZDujqJEyXgxvlR/exec"
+    "LEADS_ENDPOINT": "https://script.google.com/macros/s/AKfycbyRTXYj_2yC6K-LxQLK4YJy0DJ_sw_QY52PXkYOkmqxmQhoZTawXiT8K1Hj0eySbjXM/exec""
   },
   "observability": {
     "enabled": true
