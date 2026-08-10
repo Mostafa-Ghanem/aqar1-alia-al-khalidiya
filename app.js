@@ -144,8 +144,18 @@
   const successBox = document.querySelector('[data-lead-success]');
   const submitButton = document.querySelector('[data-lead-submit]');
 
-  const cleanPhone = (value) => value.replace(/[^0-9+]/g, '');
-  const isSaudiPhone = (value) => /^(?:\+?966|00966|0)?5\d{8}$/.test(cleanPhone(value));
+  const normalizeDigits = (phoneText) => phoneText
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0));
+  const normalizePhone = (phoneText) => {
+    const westernPhone = normalizeDigits(phoneText).replace(/[()\s.-]/g, '');
+    return westernPhone.startsWith('00') ? `+${westernPhone.slice(2)}` : westernPhone;
+  };
+  const isCompletePhone = (phoneText) => {
+    const normalizedPhone = normalizePhone(phoneText);
+    const phoneDigits = normalizedPhone.startsWith('+') ? normalizedPhone.slice(1) : normalizedPhone;
+    return /^\d{8,15}$/.test(phoneDigits) && !/^0+$/.test(phoneDigits);
+  };
   const qp = (key) => query.get(key) || '';
 
   interestForm?.addEventListener('submit', async (event) => {
@@ -155,10 +165,8 @@
 
     const name = document.getElementById('lead-name')?.value.trim() || '';
     const phone = document.getElementById('lead-phone')?.value.trim() || '';
-    const email = document.getElementById('lead-email')?.value.trim() || '';
     const interest = interestSelect?.value || '';
-    const preferredContact = document.getElementById('lead-contact')?.value || 'أي طريقة';
-    const message = document.getElementById('lead-message')?.value.trim() || '';
+    const preferredContact = 'أي طريقة';
     const honeypot = document.getElementById('lead-company')?.value || '';
     const consent = Boolean(document.getElementById('lead-consent')?.checked);
 
@@ -166,16 +174,16 @@
       if (formStatus) { formStatus.textContent = 'أكمل الاسم والجوال ونوع الاهتمام والموافقة على التواصل.'; formStatus.classList.add('error'); }
       return;
     }
-    if (!isSaudiPhone(phone)) {
-      if (formStatus) { formStatus.textContent = 'تحقق من رقم الجوال السعودي، مثال: 05xxxxxxxx.'; formStatus.classList.add('error'); }
+    if (!isCompletePhone(phone)) {
+      if (formStatus) { formStatus.textContent = 'أدخل رقم جوال كاملًا، سعوديًا أو دوليًا، مثل 05xxxxxxxx أو +9665xxxxxxxx.'; formStatus.classList.add('error'); }
       document.getElementById('lead-phone')?.focus();
       return;
     }
     if (honeypot) return;
 
     const payload = {
-      name, phone: cleanPhone(phone), email, interest,
-      preferred_contact: preferredContact, message, company: honeypot, consent,
+      name, phone: normalizePhone(phone), email: '', interest,
+      preferred_contact: preferredContact, message: '', company: honeypot, consent,
       source: qp('utm_source') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'google' : 'direct'),
       medium: qp('utm_medium') || (qp('gclid') || qp('gbraid') || qp('wbraid') ? 'cpc' : ''),
       campaign: qp('utm_campaign'),

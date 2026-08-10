@@ -10,6 +10,18 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
 });
 
 const scalar = (v, max = 500) => String(v ?? '').trim().slice(0, max);
+const normalizeDigits = (phoneText) => phoneText
+  .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+  .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0));
+const normalizePhone = (phoneText) => {
+  const westernPhone = normalizeDigits(phoneText).replace(/[()\s.-]/g, '');
+  return westernPhone.startsWith('00') ? `+${westernPhone.slice(2)}` : westernPhone;
+};
+const isCompletePhone = (phoneText) => {
+  const normalizedPhone = normalizePhone(phoneText);
+  const phoneDigits = normalizedPhone.startsWith('+') ? normalizedPhone.slice(1) : normalizedPhone;
+  return /^\d{8,15}$/.test(phoneDigits) && !/^0+$/.test(phoneDigits);
+};
 
 export async function onRequestPost({ request, env }) {
   const origin = request.headers.get('origin');
@@ -24,9 +36,9 @@ export async function onRequestPost({ request, env }) {
   if (scalar(input.company, 100)) return json({ ok: true, ignored: true });
 
   const name = scalar(input.name, 80);
-  const phone = scalar(input.phone, 20).replace(/[^0-9+]/g, '');
+  const phone = normalizePhone(scalar(input.phone, 25));
   const interest = scalar(input.interest, 80);
-  if (!name || !/^(?:\+?966|00966|0)?5\d{8}$/.test(phone) || !interest || input.consent !== true) {
+  if (!name || !isCompletePhone(phone) || !interest || input.consent !== true) {
     return json({ ok: false, error: 'validation_failed' }, 422);
   }
 
