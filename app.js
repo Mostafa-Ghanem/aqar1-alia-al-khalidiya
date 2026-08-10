@@ -219,7 +219,7 @@
     } catch (error) {
       emit('lead_submit_error', { traffic_intent: trafficIntent || 'default', error_type: String(error?.message || 'submit_failed').slice(0, 80) });
       if (formStatus) {
-        formStatus.textContent = 'تعذر تسجيل الطلب الآن. يمكنك المحاولة مرة أخرى أو التواصل معنا مباشرة عبر واتساب أو الرقم الموحد.';
+        formStatus.textContent = 'تعذر تسجيل الطلب الآن. يمكنك المحاولة مرة أخرى أو التواصل معنا مباشرة عبر الرقم الموحد.';
         formStatus.classList.add('error');
       }
     } finally {
