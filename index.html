@@ -6,8 +6,14 @@
   <script>
     (function(w,d,s,l,i){
       var prodHosts=['alia.aqar1.com','aqar1-alia-al-khalidiya.pages.dev'];
+      w[l]=w[l]||[];
+      w[l].push({
+        event:'landing_page_init',
+        page_path:w.location.pathname,
+        page_location:w.location.href
+      });
       if(!prodHosts.includes(w.location.hostname)) return;
-      w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+      w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
       var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
       j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-5N7HCDF');
@@ -24,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=20260810-1620">
+  <link rel="stylesheet" href="/styles.css?v=20260810-1700">
 
   <meta property="og:locale" content="ar_SA">
   <meta property="og:type" content="website">
@@ -108,11 +114,7 @@
           <div class="form-card-heading">
             <p class="form-kicker">طلب تفاصيل المشروع</p>
             <h2 id="enquiry-title">اعرف الخيارات المناسبة لك</h2>
-            <p class="enquiry-intro">أدخل بياناتك المختصرة واختر نوع اهتمامك، ليتواصل معك فريق عقار ون بخصوص عالية الخالدية.</p>
-          </div>
-          <div class="form-benefits" aria-label="معلومات عن النموذج">
-            <span>نموذج مختصر</span>
-            <span>رقم سعودي أو دولي</span>
+            <p class="enquiry-intro">اترك بياناتك واختر نوع الأرض التي تهمك، وسيتواصل معك فريق عقار ون بتفاصيل عالية الخالدية.</p>
           </div>
           <form class="interest-form lead-form" id="interest-form" novalidate>
             <div class="form-row two-cols">
@@ -290,7 +292,7 @@
       <div class="container">
         <div class="section-head center">
           <p class="eyebrow dark">صورة المشروع</p>
-          <h2>تعرّف على عالية الخالدية بصورة أوضح</h2>
+          <h2>قطع مميزة في موقع استثنائي</h2>
           <p>مشاهد توضّح هوية المخطط وتنوع خياراته السكنية والتجارية.</p>
         </div>
         <p class="vision-swipe-hint" aria-hidden="true">اسحب لاستعراض الصور</p>
@@ -320,7 +322,7 @@
         <div class="section-heading">
           <p class="eyebrow dark">أسئلة شائعة</p>
           <h2>كل ما تحتاجه قبل طلب التفاصيل</h2>
-          <p>إجابات مختصرة تساعدك على بدء الخطوة التالية بوضوح.</p>
+          <p>إجابات واضحة تساعدك على بدء الخطوة التالية بوضوح.</p>
         </div>
         <div class="accordion" data-accordion>
           <details open>
@@ -352,7 +354,7 @@
         </div>
         <div class="cta-form-shell">
           <div class="cta-form-topline">
-            <strong>ابدأ بطلب مختصر</strong>
+            <strong>ابدأ طلبك الآن</strong>
             <span>الاسم · الجوال · نوع الاهتمام</span>
           </div>
           <form class="interest-form lead-form" id="closing-lead-form" novalidate>
@@ -428,6 +430,6 @@
     <img id="dialog-image" src="/assets/site-plan.webp?v=20260810-1345" alt="">
   </dialog>
 
-  <script src="/app.js?v=20260810-1620" defer></script>
+  <script src="/app.js?v=20260810-1700" defer></script>
 </body>
 </html>

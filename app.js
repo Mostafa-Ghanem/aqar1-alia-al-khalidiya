@@ -4,23 +4,31 @@
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 
-  const emit = (name, params = {}) => {
+  const query = new URLSearchParams(window.location.search);
+  const queryValue = (key) => query.get(key) || '';
+  const buildTrackingContext = () => ({
+    page_path: window.location.pathname,
+    page_location: window.location.href,
+    referrer: document.referrer || '',
+    traffic_intent: queryValue('intent').toLowerCase() || 'default',
+    utm_source: queryValue('utm_source') || null,
+    utm_campaign: queryValue('utm_campaign') || null,
+    utm_medium: queryValue('utm_medium') || null,
+    utm_term: queryValue('utm_term') || null
+  });
+  const emit = (eventName, eventDetails = {}) => {
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: name, ...params });
-    if (typeof window.gtag === 'function') window.gtag('event', name, params);
+    const eventPayload = { event: eventName, ...buildTrackingContext(), ...eventDetails };
+    window.dataLayer.push(eventPayload);
+    if (typeof window.gtag === 'function') window.gtag('event', eventName, eventDetails);
   };
+  emit('page_view');
 
   document.querySelectorAll('[data-event]').forEach((element) => {
     element.addEventListener('click', () => {
       emit(element.dataset.event, {
         link_url: element.href || null,
-        link_text: element.textContent.trim(),
-        page_path: window.location.pathname,
-        utm_source: new URLSearchParams(window.location.search).get('utm_source') || null,
-        utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign') || null,
-        utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || null,
-        utm_term: new URLSearchParams(window.location.search).get('utm_term') || null,
-        traffic_intent: new URLSearchParams(window.location.search).get('intent') || 'default'
+        link_text: element.textContent.trim()
       });
     });
   });
@@ -81,8 +89,7 @@
   });
 
 
-  const query = new URLSearchParams(window.location.search);
-  const trafficIntent = (query.get('intent') || '').toLowerCase();
+  const trafficIntent = queryValue('intent').toLowerCase();
   const intentCopy = {
     brand: {
       title: 'مخطط عالية الخالدية بالطائف',
@@ -133,8 +140,7 @@
     button.addEventListener('click', () => {
       setInterest(button.dataset.setInterest);
       emit('interest_select', {
-        interest_type: button.dataset.setInterest,
-        traffic_intent: trafficIntent || 'default'
+        interest_type: button.dataset.setInterest
       });
       document.getElementById('enquiry-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setTimeout(() => interestSelect?.focus({ preventScroll: true }), 450);
@@ -157,7 +163,7 @@
     const phoneDigits = normalizedPhone.startsWith('+') ? normalizedPhone.slice(1) : normalizedPhone;
     return /^\d{8,15}$/.test(phoneDigits) && !/^0+$/.test(phoneDigits);
   };
-  const qp = (key) => query.get(key) || '';
+  const qp = queryValue;
 
   const readLeadFields = (leadForm) => ({
     name: getFieldValue(leadForm, 'name'),
@@ -211,10 +217,11 @@
     if (formElements.successBox) formElements.successBox.hidden = false;
     if (formElements.formStatus) formElements.formStatus.classList.add('success');
   };
-  const reportLeadSuccess = (leadFields, leadPayload, responseBody) => {
+  const reportLeadSuccess = (leadFields, leadPayload, responseBody, formId) => {
     emit('generate_lead', {
       lead_id: responseBody.lead_id || null, interest_type: leadFields.interest,
-      preferred_contact: leadPayload.preferred_contact, traffic_intent: trafficIntent || 'default',
+      form_id: formId || null,
+      preferred_contact: leadPayload.preferred_contact,
       source: leadPayload.source || null, medium: leadPayload.medium || null,
       campaign: leadPayload.campaign || null, ad_group: leadPayload.ad_group || null,
       keyword: leadPayload.keyword || null
@@ -224,16 +231,22 @@
     startLeadSubmission(formElements);
     try {
       const responseBody = await sendLead(leadPayload);
-      reportLeadSuccess(leadFields, leadPayload, responseBody);
+      reportLeadSuccess(leadFields, leadPayload, responseBody, leadForm.id);
       showLeadSuccess(leadForm, formElements);
     } catch (error) {
-      emit('lead_submit_error', { traffic_intent: trafficIntent || 'default', error_type: String(error?.message || 'submit_failed').slice(0, 80) });
+      emit('lead_submit_error', {
+        form_id: leadForm.id || null,
+        error_type: String(error?.message || 'submit_failed').slice(0, 80)
+      });
       showLeadError(formElements.formStatus, 'تعذر تسجيل الطلب الآن. يمكنك المحاولة مرة أخرى أو التواصل معنا مباشرة عبر الرقم الموحد.');
     } finally {
       resetLeadSubmission(formElements);
     }
   };
   const bindLeadForm = (leadForm) => {
+    leadForm.addEventListener('focusin', () => {
+      emit('lead_form_start', { form_id: leadForm.id || null });
+    }, { once: true });
     const submitButton = leadForm.querySelector('[data-lead-submit]');
     const formElements = {
       formStatus: leadForm.querySelector('[data-form-status]'),
