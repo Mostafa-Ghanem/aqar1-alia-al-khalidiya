@@ -27,10 +27,20 @@
 
   const sticky = document.querySelector('[data-mobile-sticky]');
   if (sticky) {
+    const blockedZones = Array.from(document.querySelectorAll('#enquiry-card, .plan-preview, .vision-grid'));
+    const activeBlocks = new Set();
     const toggleSticky = () => {
       const threshold = Math.max(320, document.documentElement.scrollHeight * 0.18);
       sticky.classList.toggle('visible', window.scrollY > threshold);
+      sticky.classList.toggle('media-hidden', activeBlocks.size > 0 || Boolean(document.querySelector('#media-dialog[open]')));
     };
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => entry.isIntersecting && entry.intersectionRatio > 0.22 ? activeBlocks.add(entry.target) : activeBlocks.delete(entry.target));
+        toggleSticky();
+      }, { threshold: [0, .22, .5] });
+      blockedZones.forEach((zone) => observer.observe(zone));
+    }
     toggleSticky();
     window.addEventListener('scroll', toggleSticky, { passive: true });
   }
