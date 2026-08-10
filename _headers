@@ -6,10 +6,10 @@
   Cross-Origin-Opener-Policy: same-origin
 
 /assets/*.webp
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=3600, must-revalidate
 
 /assets/*.png
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=3600, must-revalidate
 
 /assets/*.pdf
   Cache-Control: public, max-age=604800
